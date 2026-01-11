@@ -72,7 +72,7 @@ export const uploadCustomerFiles = multer({
       } else if (file.fieldname === 'panImage') {
         cb(null, panDir);
       } else {
-        cb(new Error('Invalid field name'));
+        cb(new Error('Invalid field name'), '');
       }
     },
     filename: (req, file, cb) => {

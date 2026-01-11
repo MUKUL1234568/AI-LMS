@@ -83,7 +83,7 @@ export const registerCompany = async (req: Request, res: Response) => {
         role: 'ADMIN',
       },
       process.env.JWT_SECRET || 'secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
     );
 
     res.status(201).json({
@@ -144,7 +144,7 @@ export const login = async (req: Request, res: Response) => {
         role: user.role,
       },
       process.env.JWT_SECRET || 'secret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
+      { expiresIn: process.env.JWT_EXPIRES_IN || '7d' } as jwt.SignOptions
     );
 
     res.json({
@@ -173,7 +173,6 @@ export const getCurrentUser = async (req: any, res: Response) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id: req.user.userId },
-      include: { company: true },
       select: {
         id: true,
         name: true,
