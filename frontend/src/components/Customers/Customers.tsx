@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { customerService } from '../../services/customer.service';
+import { BASE_URL } from '../../services/api';
 import { Customer } from '../../types';
 import CustomerModal from './CustomerModal';
 import './Customers.css';
@@ -68,9 +69,7 @@ const Customers = () => {
 
   const getImageUrl = (path?: string) => {
     if (!path) return null;
-    // Paths are already in format /uploads/photos/... so we use them directly
-    // No need for API_URL prefix since vite proxy handles /uploads
-    return path;
+    return `${BASE_URL}${path}`;
   };
 
   const getTotalPrincipal = () => {

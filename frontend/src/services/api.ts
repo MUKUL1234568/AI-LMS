@@ -1,6 +1,17 @@
 import axios from 'axios';
 
-const API_URL = '/api';
+// Base URL for the backend (e.g., http://localhost:5000 or https://api.render.com)
+// If VITE_API_URL includes /api, strip it to get base. If not, assume it's the base.
+const getBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    return envUrl.replace(/\/api$/, '');
+  }
+  return ''; // Empty string means relative path (for proxy)
+};
+
+export const BASE_URL = getBaseUrl();
+const API_URL = `${BASE_URL}/api`;
 
 const api = axios.create({
   baseURL: API_URL,

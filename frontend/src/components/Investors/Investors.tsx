@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { investorService } from '../../services/investor.service';
+import { BASE_URL } from '../../services/api';
 import { Investor } from '../../types';
 import InvestorModal from './InvestorModal';
 import './Investors.css';
@@ -68,7 +69,7 @@ const Investors = () => {
 
   const getImageUrl = (path?: string) => {
     if (!path) return null;
-    return path;
+    return `${BASE_URL}${path}`;
   };
 
   const getTotalPrincipal = () => {

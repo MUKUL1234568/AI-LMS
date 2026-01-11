@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { investorService } from '../../services/investor.service';
 import { Investor } from '../../types';
+import { BASE_URL } from '../../services/api';
 import './InvestorModal.css';
-
-const API_URL = '/api';
 
 interface InvestorModalProps {
   investor: Investor | null;
@@ -43,16 +42,16 @@ const InvestorModal: React.FC<InvestorModalProps> = ({ investor, onClose }) => {
         panNumber: investor.panNumber || '',
       });
       if (investor.photo) {
-        setPhotoPreview(`${API_URL}${investor.photo}`);
+        setPhotoPreview(`${BASE_URL}${investor.photo}`);
       }
       if (investor.signature) {
-        setSignaturePreview(`${API_URL}${investor.signature}`);
+        setSignaturePreview(`${BASE_URL}${investor.signature}`);
       }
       if (investor.aadhaarImage) {
-        setAadhaarPreview(`${API_URL}${investor.aadhaarImage}`);
+        setAadhaarPreview(`${BASE_URL}${investor.aadhaarImage}`);
       }
       if (investor.panImage) {
-        setPanPreview(`${API_URL}${investor.panImage}`);
+        setPanPreview(`${BASE_URL}${investor.panImage}`);
       }
     }
   }, [investor]);

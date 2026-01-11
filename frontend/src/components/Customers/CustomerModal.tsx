@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { customerService } from '../../services/customer.service';
 import { Customer } from '../../types';
+import { BASE_URL } from '../../services/api';
 import './CustomerModal.css';
-
-const API_URL = '/api';
 
 interface CustomerModalProps {
   customer: Customer | null;
@@ -43,16 +42,16 @@ const CustomerModal: React.FC<CustomerModalProps> = ({ customer, onClose }) => {
         panNumber: customer.panNumber || '',
       });
       if (customer.photo) {
-        setPhotoPreview(`${API_URL}${customer.photo}`);
+        setPhotoPreview(`${BASE_URL}${customer.photo}`);
       }
       if (customer.signature) {
-        setSignaturePreview(`${API_URL}${customer.signature}`);
+        setSignaturePreview(`${BASE_URL}${customer.signature}`);
       }
       if (customer.aadhaarImage) {
-        setAadhaarPreview(`${API_URL}${customer.aadhaarImage}`);
+        setAadhaarPreview(`${BASE_URL}${customer.aadhaarImage}`);
       }
       if (customer.panImage) {
-        setPanPreview(`${API_URL}${customer.panImage}`);
+        setPanPreview(`${BASE_URL}${customer.panImage}`);
       }
     }
   }, [customer]);
