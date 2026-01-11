@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { transactionService } from '../../services/transaction.service';
 import { customerService } from '../../services/customer.service';
 import { bankService } from '../../services/bank.service';
-import { Customer, Transaction, BankAccount } from '../../types';
+import { Customer, BankAccount } from '../../types';
 import CustomerModal from './CustomerModal';
 import './CustomerDetail.css';
 
@@ -248,8 +248,8 @@ const CustomerDetail = () => {
             <span className="label">Accumulated Interest</span>
             <span className="value">{formatCurrency(customer.accumulatedInterest)}</span>
             {customer.accumulatedInterest > 0 && (
-              <button 
-                onClick={handleAddInterestToPrincipal} 
+              <button
+                onClick={handleAddInterestToPrincipal}
                 className="btn btn-small btn-warning"
                 disabled={actionLoading}
               >
@@ -264,7 +264,7 @@ const CustomerDetail = () => {
         </div>
         <div className="interest-rate-info">
           <span>Monthly Interest Rate: <strong>{customer.monthlyInterestRate}%</strong></span>
-          <button 
+          <button
             onClick={() => {
               setNewInterestRate(customer.monthlyInterestRate.toString());
               setShowInterestRateModal(true);
@@ -295,16 +295,15 @@ const CustomerDetail = () => {
             customer.transactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className={`transaction-item ${
-                  transaction.type === 'DEPOSIT' ? 'deposit' : 
+                className={`transaction-item ${transaction.type === 'DEPOSIT' ? 'deposit' :
                   transaction.type === 'INTEREST_ADD' ? 'interest-add' : 'loan'
-                }`}
+                  }`}
               >
                 <div className="transaction-content">
                   <div className="transaction-header">
                     <span className="transaction-type">
-                      {transaction.type === 'DEPOSIT' ? '💰 Deposit' : 
-                       transaction.type === 'INTEREST_ADD' ? '📊 Interest Added' : '🏦 Loan Given'}
+                      {transaction.type === 'DEPOSIT' ? '💰 Deposit' :
+                        transaction.type === 'INTEREST_ADD' ? '📊 Interest Added' : '🏦 Loan Given'}
                     </span>
                     <span className="transaction-amount">
                       {transaction.type === 'DEPOSIT' ? '-' : '+'}{formatCurrency(transaction.amount)}
@@ -361,13 +360,13 @@ const CustomerDetail = () => {
                 </div>
                 <div className="form-group">
                   <label>Principal Amount (₹) *</label>
-              <input
-                type="number"
-                value={loanAmount}
-                onChange={(e) => setLoanAmount(e.target.value)}
-                placeholder="Enter amount"
-                min="1"
-              />
+                  <input
+                    type="number"
+                    value={loanAmount}
+                    onChange={(e) => setLoanAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    min="1"
+                  />
                   {loanAmount && selectedBankAccountId && parseFloat(loanAmount) > (bankAccounts.find(b => b.id === selectedBankAccountId)?.balance || 0) && (
                     <p className="error" style={{ marginTop: '5px' }}>
                       Insufficient balance in selected bank account!
@@ -376,32 +375,32 @@ const CustomerDetail = () => {
                 </div>
                 <div className="form-group">
                   <label>Monthly Interest Rate (%) *</label>
-              <input
-                type="number"
-                value={interestRate}
-                onChange={(e) => setInterestRate(e.target.value)}
-                placeholder="Enter monthly rate"
-                min="0"
-                step="0.1"
-              />
-            </div>
-            <div className="form-group">
-              <label>Description (Optional)</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add a note"
-              />
-            </div>
-            <div className="modal-footer">
-              <button onClick={() => setShowLoanModal(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-                  <button 
-                    onClick={handleGiveLoan} 
+                  <input
+                    type="number"
+                    value={interestRate}
+                    onChange={(e) => setInterestRate(e.target.value)}
+                    placeholder="Enter monthly rate"
+                    min="0"
+                    step="0.1"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Description (Optional)</label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Add a note"
+                  />
+                </div>
+                <div className="modal-footer">
+                  <button onClick={() => setShowLoanModal(false)} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleGiveLoan}
                     className="btn btn-danger"
-                    disabled={actionLoading || !loanAmount || !interestRate || !selectedBankAccountId || (loanAmount && parseFloat(loanAmount) > (bankAccounts.find(b => b.id === selectedBankAccountId)?.balance || 0))}
+                    disabled={actionLoading || !loanAmount || !interestRate || !selectedBankAccountId || (!!loanAmount && parseFloat(loanAmount) > (bankAccounts.find(b => b.id === selectedBankAccountId)?.balance || 0))}
                   >
                     {actionLoading ? 'Processing...' : 'Give Loan'}
                   </button>
@@ -442,33 +441,33 @@ const CustomerDetail = () => {
                 </div>
                 <div className="form-group">
                   <label>Deposit Amount (₹) *</label>
-              <input
-                type="number"
-                value={depositAmount}
-                onChange={(e) => setDepositAmount(e.target.value)}
-                placeholder="Enter amount"
-                min="1"
-              />
-            </div>
-            <div className="form-group">
-              <label>Description (Optional)</label>
-              <input
-                type="text"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Add a note"
-              />
-            </div>
-            <p className="deposit-info">
-              Note: Deposit will first be deducted from interest (₹{customer.accumulatedInterest.toFixed(2)}), 
-              then from principal (₹{customer.principalAmount.toFixed(2)}).
-            </p>
-            <div className="modal-footer">
-              <button onClick={() => setShowDepositModal(false)} className="btn btn-secondary">
-                Cancel
-              </button>
-                  <button 
-                    onClick={handleDeposit} 
+                  <input
+                    type="number"
+                    value={depositAmount}
+                    onChange={(e) => setDepositAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    min="1"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Description (Optional)</label>
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Add a note"
+                  />
+                </div>
+                <p className="deposit-info">
+                  Note: Deposit will first be deducted from interest (₹{customer.accumulatedInterest.toFixed(2)}),
+                  then from principal (₹{customer.principalAmount.toFixed(2)}).
+                </p>
+                <div className="modal-footer">
+                  <button onClick={() => setShowDepositModal(false)} className="btn btn-secondary">
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeposit}
                     className="btn btn-success"
                     disabled={actionLoading || !depositAmount || !selectedBankAccountId}
                   >
@@ -514,17 +513,17 @@ const CustomerDetail = () => {
               />
             </div>
             <div className="modal-footer">
-              <button 
+              <button
                 onClick={() => {
                   setShowDeleteModal(false);
                   setDeletePassword('');
-                }} 
+                }}
                 className="btn btn-secondary"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleDelete} 
+              <button
+                onClick={handleDelete}
                 className="btn btn-danger"
                 disabled={actionLoading || !deletePassword}
               >
@@ -559,17 +558,17 @@ const CustomerDetail = () => {
               </p>
             </div>
             <div className="modal-footer">
-              <button 
+              <button
                 onClick={() => {
                   setShowInterestRateModal(false);
                   setNewInterestRate('');
-                }} 
+                }}
                 className="btn btn-secondary"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleUpdateInterestRate} 
+              <button
+                onClick={handleUpdateInterestRate}
                 className="btn btn-primary"
                 disabled={actionLoading || !newInterestRate}
               >

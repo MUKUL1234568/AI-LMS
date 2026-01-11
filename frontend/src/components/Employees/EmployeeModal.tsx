@@ -44,7 +44,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ employee, onClose }) => {
       const data = {
         ...formData,
         salary: formData.salary ? parseFloat(formData.salary) : undefined,
-        joinDate: formData.joinDate ? new Date(formData.joinDate) : undefined,
+        joinDate: formData.joinDate ? new Date(formData.joinDate).toISOString() : undefined,
       };
 
       if (employee) {

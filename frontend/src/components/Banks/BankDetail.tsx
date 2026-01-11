@@ -197,23 +197,23 @@ const BankDetail = () => {
 
         {/* Action Buttons */}
         <div className="action-buttons">
-          <button 
-            onClick={() => setShowWithdrawModal(true)} 
+          <button
+            onClick={() => setShowWithdrawModal(true)}
             className="btn btn-danger btn-large"
           >
             Withdraw
           </button>
-          <button 
-            onClick={() => setShowDepositModal(true)} 
+          <button
+            onClick={() => setShowDepositModal(true)}
             className="btn btn-success btn-large"
           >
             Deposit
           </button>
-          <button 
+          <button
             onClick={() => {
               setShowTransferModal(true);
               fetchAllBankAccounts();
-            }} 
+            }}
             className="btn btn-secondary btn-large"
           >
             Transfer
@@ -292,8 +292,8 @@ const BankDetail = () => {
               <button onClick={() => setShowDepositModal(false)} className="btn btn-secondary">
                 Cancel
               </button>
-              <button 
-                onClick={handleDeposit} 
+              <button
+                onClick={handleDeposit}
                 className="btn btn-success"
                 disabled={actionLoading || !amount}
               >
@@ -347,8 +347,8 @@ const BankDetail = () => {
               <button onClick={() => setShowWithdrawModal(false)} className="btn btn-secondary">
                 Cancel
               </button>
-              <button 
-                onClick={handleWithdraw} 
+              <button
+                onClick={handleWithdraw}
                 className="btn btn-danger"
                 disabled={actionLoading || !amount || parseFloat(amount) > bankAccount.balance}
               >
@@ -424,10 +424,10 @@ const BankDetail = () => {
                   <button onClick={() => setShowTransferModal(false)} className="btn btn-secondary">
                     Cancel
                   </button>
-                  <button 
-                    onClick={handleTransfer} 
+                  <button
+                    onClick={handleTransfer}
                     className="btn btn-primary"
-                    disabled={actionLoading || !transferAmount || !toAccountId || (transferAmount && parseFloat(transferAmount) > bankAccount.balance)}
+                    disabled={actionLoading || !transferAmount || !toAccountId || (!!transferAmount && parseFloat(transferAmount) > bankAccount.balance)}
                   >
                     {actionLoading ? 'Processing...' : 'Transfer'}
                   </button>
