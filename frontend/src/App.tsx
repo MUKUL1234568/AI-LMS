@@ -10,6 +10,7 @@ import Investors from './components/Investors/Investors';
 import InvestorDetail from './components/Investors/InvestorDetail';
 import Banks from './components/Banks/Banks';
 import BankDetail from './components/Banks/BankDetail';
+import Admin from './components/Admin/Admin';
 import Layout from './components/Layout/Layout';
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="investors/:id" element={<InvestorDetail />} />
           <Route path="banks" element={<Banks />} />
           <Route path="banks/:id" element={<BankDetail />} />
+          <Route path="admin" element={<Admin />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

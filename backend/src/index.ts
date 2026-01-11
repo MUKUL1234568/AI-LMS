@@ -10,6 +10,7 @@ import { authRoutes } from './routes/auth.routes';
 import { transactionRoutes } from './routes/transaction.routes';
 import { investorTransactionRoutes } from './routes/investorTransaction.routes';
 import { bankRoutes } from './routes/bank.routes';
+import { adminRoutes } from './routes/admin.routes';
 
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use('/api/investors', investorRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/investor-transactions', investorTransactionRoutes);
 app.use('/api/banks', bankRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

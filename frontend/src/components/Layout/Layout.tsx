@@ -76,6 +76,14 @@ const Layout = () => {
                             Banks
                         </Link>
                     </li>
+                    {user?.role === 'ADMIN' && (
+                        <li>
+                            <Link to="/admin" onClick={closeMobileMenu} className={location.pathname.startsWith('/admin') ? 'active' : ''}>
+                                <span className="menu-icon">⚙️</span>
+                                Admin
+                            </Link>
+                        </li>
+                    )}
                 </ul>
                 <div className="sidebar-footer">
                     <div className="user-info">
