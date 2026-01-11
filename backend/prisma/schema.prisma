@@ -1,0 +1,231 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // The admin user who registered the company
+  adminId String @unique
+  admin   User   @relation("CompanyAdmin", fields: [adminId], references: [id], onDelete: Cascade)
+
+  // Users belonging to this company
+  users User[] @relation("CompanyUsers")
+
+  employees        Employee[]
+  customers        Customer[]
+  investors        Investor[]
+  transactions     Transaction[]
+  investorTransactions InvestorTransaction[]
+  bankAccounts     BankAccount[]
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  phone     String?
+  role      UserRole @default(EMPLOYEE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Company the user belongs to
+  companyId String?
+  company   Company? @relation("CompanyUsers", fields: [companyId], references: [id], onDelete: Cascade)
+
+  // If this user is admin of a company
+  adminCompany Company? @relation("CompanyAdmin")
+}
+
+enum UserRole {
+  ADMIN
+  EMPLOYEE
+}
+
+model Employee {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  phone     String?
+  address   String?
+  position  String?
+  salary    Float?
+  joinDate  DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, email])
+}
+
+model Customer {
+  id            String  @id @default(uuid())
+  name          String
+  email         String?
+  phone         String
+  address       String?
+  idNumber      String? // Other ID number
+  photo         String? // Path to photo file
+  signature     String? // Path to signature file
+  aadhaarNumber String? // Aadhaar card number
+  panNumber     String? // PAN card number
+  aadhaarImage  String? // Path to Aadhaar card image
+  panImage      String? // Path to PAN card image
+
+  // Loan tracking fields
+  principalAmount     Float    @default(0) // Total principal amount owed
+  accumulatedInterest Float    @default(0) // Accumulated interest
+  monthlyInterestRate Float    @default(0) // Monthly interest rate percentage
+  lastInterestDate    DateTime @default(now()) // Last date interest was calculated
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId    String
+  company      Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  transactions Transaction[]
+
+  @@unique([companyId, phone])
+}
+
+model Investor {
+  id            String  @id @default(uuid())
+  name          String
+  email         String?
+  phone         String
+  address       String?
+  idNumber      String? // Other ID number
+  photo         String? // Path to photo file
+  signature     String? // Path to signature file
+  aadhaarNumber String? // Aadhaar card number
+  panNumber     String? // PAN card number
+  aadhaarImage  String? // Path to Aadhaar card image
+  panImage      String? // Path to PAN card image
+
+  // Loan tracking fields (we owe the investor)
+  principalAmount     Float    @default(0) // Total principal amount we owe
+  accumulatedInterest Float    @default(0) // Accumulated interest we owe
+  monthlyInterestRate Float    @default(0) // Monthly interest rate percentage
+  lastInterestDate    DateTime @default(now()) // Last date interest was calculated
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId    String
+  company      Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  transactions InvestorTransaction[]
+
+  @@unique([companyId, phone])
+}
+
+model Transaction {
+  id           String          @id @default(uuid())
+  type         TransactionType
+  amount       Float // Amount of transaction
+  interestRate Float? // Interest rate (for LOAN type)
+  description  String? // Optional description
+
+  // Balance after transaction
+  principalAfter Float
+  interestAfter  Float
+
+  createdAt DateTime @default(now())
+
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Bank account used for this transaction (optional)
+  bankAccountId String?
+  bankAccount   BankAccount? @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+}
+
+enum TransactionType {
+  LOAN // Giving loan (adds to principal)
+  DEPOSIT // Customer deposit (reduces interest first, then principal)
+  INTEREST_ADD // Adding accumulated interest to principal
+}
+
+model InvestorTransaction {
+  id           String                 @id @default(uuid())
+  type         InvestorTransactionType
+  amount       Float // Amount of transaction
+  interestRate Float? // Interest rate (for LOAN_TAKEN type)
+  description  String? // Optional description
+
+  // Balance after transaction
+  principalAfter Float
+  interestAfter  Float
+
+  createdAt DateTime @default(now())
+
+  investorId String
+  investor   Investor @relation(fields: [investorId], references: [id], onDelete: Cascade)
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  // Bank account used for this transaction (optional)
+  bankAccountId String?
+  bankAccount   BankAccount? @relation("InvestorBankTransactions", fields: [bankAccountId], references: [id], onDelete: SetNull)
+}
+
+enum InvestorTransactionType {
+  LOAN_TAKEN   // Taking loan from investor (adds to principal we owe)
+  LOAN_RETURN  // Returning loan to investor (reduces interest first, then principal)
+  INTEREST_ADD // Adding accumulated interest to principal
+}
+
+// Company Bank Account Management
+model BankAccount {
+  id            String   @id @default(uuid())
+  bankName      String   // e.g., "SBI", "PNB"
+  accountNumber String?  // Optional bank account number
+  ownerName     String   // Account holder name
+  balance       Float    @default(0) // Current balance
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  companyId              String
+  company                Company                    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  bankTransactions       BankTransaction[]
+  customerTransactions   Transaction[]
+  investorTransactions   InvestorTransaction[]      @relation("InvestorBankTransactions")
+
+  @@unique([companyId, bankName, accountNumber])
+}
+
+model BankTransaction {
+  id          String              @id @default(uuid())
+  type        BankTransactionType
+  amount      Float
+  description String?
+  balanceAfter Float              // Balance after this transaction
+  
+  createdAt DateTime @default(now())
+
+  bankAccountId String
+  bankAccount   BankAccount @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
+}
+
+enum BankTransactionType {
+  DEPOSIT
+  WITHDRAW
+}

@@ -1,0 +1,293 @@
+/* Total Balance Card - Hero Section */
+.total-balance-card {
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  color: white;
+  text-align: center;
+  margin-bottom: 28px;
+  border-radius: 24px;
+  padding: 36px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(26, 26, 46, 0.3);
+}
+
+.total-balance-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(102, 126, 234, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(118, 75, 162, 0.1) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.total-balance-card::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.03) 50%,
+      transparent 70%);
+  animation: shimmer 3s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-50%) translateY(-50%) rotate(0deg);
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(-50%) rotate(360deg);
+  }
+}
+
+.total-balance {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.total-balance .label {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  opacity: 0.8;
+  font-weight: 600;
+}
+
+.total-balance .value {
+  font-size: 42px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.total-amount-large {
+  font-size: 56px !important;
+  font-weight: 800 !important;
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 50%, #48bb78 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+  margin-top: 8px;
+  text-shadow: 0 0 60px rgba(78, 205, 196, 0.3);
+}
+
+/* Bank Grid */
+.bank-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+/* Bank Card - Premium Glass Design */
+.bank-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.04),
+    0 10px 20px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+}
+
+.bank-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea, #764ba2, #e91e63, #f55555);
+  background-size: 300% 100%;
+  animation: gradientMove 4s ease infinite;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes gradientMove {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.bank-card:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow:
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    0 24px 48px rgba(0, 0, 0, 0.12);
+}
+
+.bank-card:hover::before {
+  opacity: 1;
+}
+
+/* Bank Icon */
+.bank-icon {
+  font-size: 48px;
+  text-align: center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform 0.3s ease;
+}
+
+.bank-card:hover .bank-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+/* Bank Info */
+.bank-info {
+  text-align: center;
+}
+
+.bank-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1a202c;
+  margin: 0 0 6px 0;
+  letter-spacing: -0.3px;
+}
+
+.owner-name {
+  color: #718096;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.account-number {
+  color: #a0aec0;
+  font-size: 12px;
+  margin: 8px 0 0 0;
+  font-family: 'SF Mono', Monaco, 'Fira Code', monospace;
+  background: #f7fafc;
+  padding: 6px 12px;
+  border-radius: 8px;
+  display: inline-block;
+  letter-spacing: 1px;
+}
+
+/* Bank Balance */
+.bank-balance {
+  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+  padding: 20px;
+  border-radius: 16px;
+  text-align: center;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.balance-label {
+  display: block;
+  font-size: 11px;
+  color: #718096;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.balance-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.balance-value.positive {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.balance-value.negative {
+  background: linear-gradient(135deg, #f56565 0%, #c53030 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Bank Transactions Count */
+.bank-transactions-count {
+  text-align: center;
+  font-size: 12px;
+  color: #a0aec0;
+  padding: 12px;
+  background: rgba(102, 126, 234, 0.05);
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.bank-card:hover .bank-transactions-count {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .total-balance-card {
+    padding: 28px 20px;
+  }
+
+  .total-balance .value {
+    font-size: 32px;
+  }
+
+  .total-amount-large {
+    font-size: 42px !important;
+  }
+
+  .bank-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .bank-card {
+    padding: 20px;
+  }
+
+  .bank-name {
+    font-size: 20px;
+  }
+
+  .balance-value {
+    font-size: 24px;
+  }
+
+  .bank-icon {
+    font-size: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .total-balance .value {
+    font-size: 28px;
+  }
+
+  .total-amount-large {
+    font-size: 36px !important;
+  }
+}
