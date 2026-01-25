@@ -6,22 +6,23 @@ import { AuthRequest } from '../types';
 const calculateInterest = (
   principal: number,
   monthlyRate: number,
-  lastInterestDate: Date
+  lastInterestDate: Date,
+  calculationDate: Date = new Date()
 ): number => {
-  const now = new Date();
+  const now = calculationDate;
   const daysSinceLastCalc = Math.floor(
     (now.getTime() - lastInterestDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   if (daysSinceLastCalc <= 0 || principal <= 0 || monthlyRate <= 0) {
     return 0;
   }
-  
+
   // Daily rate = Monthly rate / 30
   const dailyRate = monthlyRate / 30;
   // Interest = Principal * Daily Rate * Days / 100
   const interest = (principal * dailyRate * daysSinceLastCalc) / 100;
-  
+
   return Math.round(interest * 100) / 100; // Round to 2 decimal places
 };
 
@@ -84,7 +85,7 @@ export const takeLoan = async (req: AuthRequest, res: Response) => {
   try {
     const companyId = req.user?.companyId;
     const { investorId } = req.params;
-    const { amount, interestRate, description, bankAccountId } = req.body;
+    const { amount, interestRate, description, bankAccountId, date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -131,7 +132,7 @@ export const takeLoan = async (req: AuthRequest, res: Response) => {
     const newPrincipal = investor.principalAmount + amount;
     const newInterest = investor.accumulatedInterest + pendingInterest;
     const newBankBalance = bankAccount.balance + amount; // Company receives money
-    
+
     const newInterestRate = interestRate;
 
     // Create transaction and update investor
@@ -143,7 +144,7 @@ export const takeLoan = async (req: AuthRequest, res: Response) => {
           principalAmount: newPrincipal,
           accumulatedInterest: newInterest,
           monthlyInterestRate: newInterestRate,
-          lastInterestDate: new Date(),
+          lastInterestDate: date ? new Date(date) : new Date(),
         },
       });
 
@@ -176,6 +177,7 @@ export const takeLoan = async (req: AuthRequest, res: Response) => {
           investorId,
           companyId,
           bankAccountId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 
@@ -194,7 +196,7 @@ export const returnLoan = async (req: AuthRequest, res: Response) => {
   try {
     const companyId = req.user?.companyId;
     const { investorId } = req.params;
-    const { amount, description, bankAccountId } = req.body;
+    const { amount, description, bankAccountId, date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -234,18 +236,19 @@ export const returnLoan = async (req: AuthRequest, res: Response) => {
     const pendingInterest = calculateInterest(
       investor.principalAmount,
       investor.monthlyInterestRate,
-      investor.lastInterestDate
+      investor.lastInterestDate,
+      date ? new Date(date) : new Date()
     );
 
     let currentInterest = investor.accumulatedInterest + pendingInterest;
     let currentPrincipal = investor.principalAmount;
-    
+
     // Check if company has any amount owed to investor
     const totalOwed = currentPrincipal + currentInterest;
     if (totalOwed <= 0) {
       return res.status(400).json({ error: 'No amount owed to investor. Cannot return loan.' });
     }
-    
+
     let remainingAmount = amount;
 
     // First subtract from interest (we pay interest first)
@@ -280,7 +283,7 @@ export const returnLoan = async (req: AuthRequest, res: Response) => {
         data: {
           principalAmount: currentPrincipal,
           accumulatedInterest: currentInterest,
-          lastInterestDate: new Date(),
+          lastInterestDate: date ? new Date(date) : new Date(),
         },
       });
 
@@ -312,6 +315,7 @@ export const returnLoan = async (req: AuthRequest, res: Response) => {
           investorId,
           companyId,
           bankAccountId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 
@@ -330,6 +334,7 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
   try {
     const companyId = req.user?.companyId;
     const { investorId } = req.params;
+    const { date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -368,7 +373,7 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
         data: {
           principalAmount: newPrincipal,
           accumulatedInterest: 0,
-          lastInterestDate: new Date(),
+          lastInterestDate: date ? new Date(date) : new Date(),
         },
         include: {
           transactions: {
@@ -387,6 +392,7 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
           interestAfter: 0,
           investorId,
           companyId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 

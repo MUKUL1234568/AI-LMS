@@ -26,6 +26,7 @@ const CustomerDetail = () => {
   const [newInterestRate, setNewInterestRate] = useState('');
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [selectedBankAccountId, setSelectedBankAccountId] = useState('');
+  const [date, setDate] = useState('');
 
   const fetchBankAccounts = async () => {
     try {
@@ -101,11 +102,13 @@ const CustomerDetail = () => {
         interestRate: parseFloat(interestRate),
         description,
         bankAccountId: selectedBankAccountId,
+        date: date || undefined,
       });
       setShowLoanModal(false);
       setLoanAmount('');
       setInterestRate('');
       setDescription('');
+      setDate('');
       fetchCustomer();
       fetchBankAccounts(); // Refresh bank accounts to show updated balance
     } catch (error: any) {
@@ -123,10 +126,12 @@ const CustomerDetail = () => {
         amount: parseFloat(depositAmount),
         description,
         bankAccountId: selectedBankAccountId,
+        date: date || undefined,
       });
       setShowDepositModal(false);
       setDepositAmount('');
       setDescription('');
+      setDate('');
       fetchCustomer();
       fetchBankAccounts(); // Refresh bank accounts to show updated balance
     } catch (error: any) {
@@ -313,7 +318,7 @@ const CustomerDetail = () => {
                     <p className="transaction-description">{transaction.description}</p>
                   )}
                   <div className="transaction-footer">
-                    <span className="transaction-date">{formatDate(transaction.createdAt)}</span>
+                    <span className="transaction-date">{formatDate(transaction.date || transaction.createdAt)}</span>
                     <span className="transaction-balance">
                       Balance: P: {formatCurrency(transaction.principalAfter)} | I: {formatCurrency(transaction.interestAfter)}
                     </span>
@@ -339,6 +344,14 @@ const CustomerDetail = () => {
               </div>
             ) : (
               <>
+                <div className="form-group">
+                  <label>Date & Time (Optional)</label>
+                  <input
+                    type="datetime-local"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </div>
                 <div className="form-group">
                   <label>Select Bank Account *</label>
                   <select

@@ -6,22 +6,23 @@ import { AuthRequest } from '../types';
 const calculateInterest = (
   principal: number,
   monthlyRate: number,
-  lastInterestDate: Date
+  lastInterestDate: Date,
+  calculationDate: Date = new Date()
 ): number => {
-  const now = new Date();
+  const now = calculationDate;
   const daysSinceLastCalc = Math.floor(
     (now.getTime() - lastInterestDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   if (daysSinceLastCalc <= 0 || principal <= 0 || monthlyRate <= 0) {
     return 0;
   }
-  
+
   // Daily rate = Monthly rate / 30
   const dailyRate = monthlyRate / 30;
   // Interest = Principal * Daily Rate * Days / 100
   const interest = (principal * dailyRate * daysSinceLastCalc) / 100;
-  
+
   return Math.round(interest * 100) / 100; // Round to 2 decimal places
 };
 
@@ -52,7 +53,8 @@ export const getCustomerWithInterest = async (req: AuthRequest, res: Response) =
     const newInterest = calculateInterest(
       customer.principalAmount,
       customer.monthlyInterestRate,
-      customer.lastInterestDate
+      customer.lastInterestDate,
+      new Date()
     );
 
     // Update accumulated interest if there's new interest
@@ -84,7 +86,7 @@ export const giveLoan = async (req: AuthRequest, res: Response) => {
   try {
     const companyId = req.user?.companyId;
     const { customerId } = req.params;
-    const { amount, interestRate, description, bankAccountId } = req.body;
+    const { amount, interestRate, description, bankAccountId, date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -128,14 +130,15 @@ export const giveLoan = async (req: AuthRequest, res: Response) => {
     const pendingInterest = calculateInterest(
       customer.principalAmount,
       customer.monthlyInterestRate,
-      customer.lastInterestDate
+      customer.lastInterestDate,
+      date ? new Date(date) : new Date()
     );
 
     // New balances
     const newPrincipal = customer.principalAmount + amount;
     const newInterest = customer.accumulatedInterest + pendingInterest;
     const newBankBalance = bankAccount.balance - amount;
-    
+
     // Use the new interest rate or keep the old one if this is an additional loan
     // We'll use the new rate as the current active rate
     const newInterestRate = interestRate;
@@ -149,7 +152,7 @@ export const giveLoan = async (req: AuthRequest, res: Response) => {
           principalAmount: newPrincipal,
           accumulatedInterest: newInterest,
           monthlyInterestRate: newInterestRate,
-          lastInterestDate: new Date(),
+          lastInterestDate: date ? new Date(date) : new Date(),
         },
       });
 
@@ -182,6 +185,7 @@ export const giveLoan = async (req: AuthRequest, res: Response) => {
           customerId,
           companyId,
           bankAccountId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 
@@ -200,7 +204,7 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
   try {
     const companyId = req.user?.companyId;
     const { customerId } = req.params;
-    const { amount, description, bankAccountId } = req.body;
+    const { amount, description, bankAccountId, date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -236,18 +240,19 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
     const pendingInterest = calculateInterest(
       customer.principalAmount,
       customer.monthlyInterestRate,
-      customer.lastInterestDate
+      customer.lastInterestDate,
+      date ? new Date(date) : new Date()
     );
 
     let currentInterest = customer.accumulatedInterest + pendingInterest;
     let currentPrincipal = customer.principalAmount;
-    
+
     // Check if customer has any amount due
     const totalDue = currentPrincipal + currentInterest;
     if (totalDue <= 0) {
       return res.status(400).json({ error: 'Customer has no amount due. Cannot receive deposit.' });
     }
-    
+
     let remainingAmount = amount;
 
     // First subtract from interest
@@ -282,7 +287,7 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
         data: {
           principalAmount: currentPrincipal,
           accumulatedInterest: currentInterest,
-          lastInterestDate: new Date(),
+          lastInterestDate: date ? new Date(date) : new Date(),
         },
       });
 
@@ -314,6 +319,7 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
           customerId,
           companyId,
           bankAccountId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 
@@ -332,6 +338,7 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
   try {
     const companyId = req.user?.companyId;
     const { customerId } = req.params;
+    const { date } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -350,7 +357,8 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
     const pendingInterest = calculateInterest(
       customer.principalAmount,
       customer.monthlyInterestRate,
-      customer.lastInterestDate
+      customer.lastInterestDate,
+      date ? new Date(date) : new Date()
     );
 
     const totalInterest = customer.accumulatedInterest + pendingInterest;
@@ -384,6 +392,7 @@ export const addInterestToPrincipal = async (req: AuthRequest, res: Response) =>
           interestAfter: 0,
           customerId,
           companyId,
+          date: date ? new Date(date) : new Date(),
         },
       });
 

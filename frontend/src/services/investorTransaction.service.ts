@@ -12,6 +12,7 @@ export const investorTransactionService = {
     interestRate: number;
     description?: string;
     bankAccountId: string;
+    date?: string;
   }): Promise<{ investor: Investor; transaction: InvestorTransaction; bankAccount: any }> => {
     const response = await api.post(`/investor-transactions/investors/${investorId}/take-loan`, data);
     return response.data;
@@ -21,6 +22,7 @@ export const investorTransactionService = {
     amount: number;
     description?: string;
     bankAccountId: string;
+    date?: string;
   }): Promise<{ investor: Investor; transaction: InvestorTransaction; bankAccount: any }> => {
     const response = await api.post(`/investor-transactions/investors/${investorId}/return-loan`, data);
     return response.data;

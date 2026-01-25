@@ -15,13 +15,13 @@ export const transactionService = {
   },
 
   // Give loan to customer
-  giveLoan: async (customerId: string, data: { amount: number; interestRate: number; description?: string; bankAccountId: string }) => {
+  giveLoan: async (customerId: string, data: { amount: number; interestRate: number; description?: string; bankAccountId: string; date?: string }) => {
     const response = await api.post(`/transactions/customer/${customerId}/loan`, data);
     return response.data;
   },
 
   // Receive deposit from customer
-  receiveDeposit: async (customerId: string, data: { amount: number; description?: string; bankAccountId: string }) => {
+  receiveDeposit: async (customerId: string, data: { amount: number; description?: string; bankAccountId: string; date?: string }) => {
     const response = await api.post(`/transactions/customer/${customerId}/deposit`, data);
     return response.data;
   },

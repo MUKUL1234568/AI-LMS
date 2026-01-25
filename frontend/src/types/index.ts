@@ -61,6 +61,7 @@ export interface Transaction {
   interestAfter: number;
   createdAt: string;
   customerId: string;
+  date?: string;
 }
 
 export interface Investor {
@@ -95,6 +96,7 @@ export interface InvestorTransaction {
   interestAfter: number;
   createdAt: string;
   investorId: string;
+  date?: string;
 }
 
 export interface BankAccount {
