@@ -439,6 +439,14 @@ const CustomerDetail = () => {
             ) : (
               <>
                 <div className="form-group">
+                  <label>Date & Time (Optional)</label>
+                  <input
+                    type="datetime-local"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
                   <label>Select Bank Account *</label>
                   <select
                     value={selectedBankAccountId}
