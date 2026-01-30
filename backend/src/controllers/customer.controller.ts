@@ -70,7 +70,7 @@ export const getCustomers = async (req: AuthRequest, res: Response) => {
 
     const customers = await prisma.customer.findMany({
       where: { companyId },
-      orderBy: { createdAt: 'desc' },
+      orderBy: { accumulatedInterest: 'desc' },
     });
 
     res.json(customers);
@@ -334,16 +334,16 @@ const calculateInterest = (
   const daysSinceLastCalc = Math.floor(
     (now.getTime() - lastInterestDate.getTime()) / (1000 * 60 * 60 * 24)
   );
-  
+
   if (daysSinceLastCalc <= 0 || principal <= 0 || monthlyRate <= 0) {
     return 0;
   }
-  
+
   // Daily rate = Monthly rate / 30
   const dailyRate = monthlyRate / 30;
   // Interest = Principal * Daily Rate * Days / 100
   const interest = (principal * dailyRate * daysSinceLastCalc) / 100;
-  
+
   return Math.round(interest * 100) / 100; // Round to 2 decimal places
 };
 

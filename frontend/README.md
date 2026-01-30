@@ -1,22 +1,32 @@
-# Money Lending System - Frontend
+# Loan Management System - Frontend
 
-## Setup Instructions
+React-based frontend for the LMS application.
+
+## Setup
 
 1. Install dependencies:
-```bash
-npm install
-```
+   ```bash
+   npm install
+   ```
 
-2. Start the development server:
-```bash
-npm run dev
-```
+2. Configure environment variables:
+   - Copy `.env.example` to `.env`
+   - Update API URL if needed
 
-The application will run on `http://localhost:3000`
+3. Start development server:
+   ```bash
+   npm start
+   ```
 
-## Features
+Application will run on `http://localhost:3000`
 
-- Company Registration and Login
-- Employee Management (CRUD)
-- Customer Management (CRUD with photo and signature upload)
-- Loan Management (Create and View loans)
+## Project Structure
+
+- `src/components/` - Reusable React components
+- `src/pages/` - Page components
+- `src/hooks/` - Custom React hooks
+- `src/services/` - API service calls
+- `src/context/` - React context for state management
+- `src/styles/` - CSS files
+- `src/utils/` - Helper functions
+- `public/` - Static files
