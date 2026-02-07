@@ -204,7 +204,7 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
   try {
     const companyId = req.user?.companyId;
     const { customerId } = req.params;
-    const { amount, description, bankAccountId, date } = req.body;
+    const { amount, description, bankAccountId, date, depositType } = req.body;
 
     if (!companyId) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -249,31 +249,53 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
 
     // Check if customer has any amount due
     const totalDue = currentPrincipal + currentInterest;
-    if (totalDue <= 0) {
+    if (totalDue <= 0 && (!depositType || depositType === 'MIXED')) {
       return res.status(400).json({ error: 'Customer has no amount due. Cannot receive deposit.' });
     }
 
     let remainingAmount = amount;
 
-    // First subtract from interest
-    if (currentInterest > 0 && remainingAmount > 0) {
-      if (remainingAmount >= currentInterest) {
-        remainingAmount -= currentInterest;
-        currentInterest = 0;
-      } else {
-        currentInterest -= remainingAmount;
-        remainingAmount = 0;
+    // Apply deposit based on type
+    if (depositType === 'INTEREST') {
+      if (currentInterest <= 0) {
+        return res.status(400).json({ error: 'No interest due to pay.' });
       }
-    }
+      if (amount > currentInterest) {
+        return res.status(400).json({ error: `Amount exceeds interest due (₹${currentInterest.toFixed(2)})` });
+      }
+      currentInterest -= amount;
+      remainingAmount = 0;
+    } else if (depositType === 'PRINCIPAL') {
+      if (currentPrincipal <= 0) {
+        return res.status(400).json({ error: 'No principal due to pay.' });
+      }
+      if (amount > currentPrincipal) {
+        return res.status(400).json({ error: `Amount exceeds principal due (₹${currentPrincipal.toFixed(2)})` });
+      }
+      currentPrincipal -= amount;
+      remainingAmount = 0;
+    } else {
+      // Default behavior: Interest first, then Principal
+      // First subtract from interest
+      if (currentInterest > 0 && remainingAmount > 0) {
+        if (remainingAmount >= currentInterest) {
+          remainingAmount -= currentInterest;
+          currentInterest = 0;
+        } else {
+          currentInterest -= remainingAmount;
+          remainingAmount = 0;
+        }
+      }
 
-    // Then subtract from principal
-    if (currentPrincipal > 0 && remainingAmount > 0) {
-      if (remainingAmount >= currentPrincipal) {
-        remainingAmount -= currentPrincipal;
-        currentPrincipal = 0;
-      } else {
-        currentPrincipal -= remainingAmount;
-        remainingAmount = 0;
+      // Then subtract from principal
+      if (currentPrincipal > 0 && remainingAmount > 0) {
+        if (remainingAmount >= currentPrincipal) {
+          remainingAmount -= currentPrincipal;
+          currentPrincipal = 0;
+        } else {
+          currentPrincipal -= remainingAmount;
+          remainingAmount = 0;
+        }
       }
     }
 
@@ -309,11 +331,23 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
       });
 
       // Create customer transaction record
+      let transactionType = 'DEPOSIT';
+      if (depositType === 'INTEREST') transactionType = 'DEPOSIT_INTEREST'; // Or keep generic DEPOSIT but use desc? 
+      // Keeping type as DEPOSIT for compatibility, but description can be distinct. 
+      // Actually, schema might restrict 'type'. Let's check schema or just use description.
+      // The user didn't ask for a schema change, so I'll stick to 'DEPOSIT' type but improve description.
+
+      const defaultDesc = depositType === 'INTEREST'
+        ? `Interest Deposit: ₹${amount}`
+        : depositType === 'PRINCIPAL'
+          ? `Principal Deposit: ₹${amount}`
+          : `Deposit received: ₹${amount}`;
+
       const transaction = await tx.transaction.create({
         data: {
           type: 'DEPOSIT',
           amount,
-          description: description || `Deposit received: ₹${amount}`,
+          description: description || defaultDesc,
           principalAfter: currentPrincipal,
           interestAfter: currentInterest,
           customerId,

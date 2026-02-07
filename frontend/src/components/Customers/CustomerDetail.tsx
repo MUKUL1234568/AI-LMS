@@ -14,6 +14,7 @@ const CustomerDetail = () => {
   const [loading, setLoading] = useState(true);
   const [showLoanModal, setShowLoanModal] = useState(false);
   const [showDepositModal, setShowDepositModal] = useState(false);
+  const [depositType, setDepositType] = useState<'INTEREST' | 'PRINCIPAL' | null>(null);
   const [loanAmount, setLoanAmount] = useState('');
   const [interestRate, setInterestRate] = useState('');
   const [depositAmount, setDepositAmount] = useState('');
@@ -127,6 +128,7 @@ const CustomerDetail = () => {
         description,
         bankAccountId: selectedBankAccountId,
         date: date || undefined,
+        depositType: depositType || undefined,
       });
       setShowDepositModal(false);
       setDepositAmount('');
@@ -284,9 +286,26 @@ const CustomerDetail = () => {
           <button onClick={() => setShowLoanModal(true)} className="btn btn-danger btn-large">
             Give Loan
           </button>
-          <button onClick={() => setShowDepositModal(true)} className="btn btn-success btn-large">
-            Receive Deposit
-          </button>
+          <div className="deposit-actions">
+            <button
+              onClick={() => {
+                setDepositType('INTEREST');
+                setShowDepositModal(true);
+              }}
+              className="btn btn-warning btn-large"
+            >
+              Deposit Interest
+            </button>
+            <button
+              onClick={() => {
+                setDepositType('PRINCIPAL');
+                setShowDepositModal(true);
+              }}
+              className="btn btn-success btn-large"
+            >
+              Deposit Principal
+            </button>
+          </div>
         </div>
       </div>
 
@@ -429,7 +448,11 @@ const CustomerDetail = () => {
         <div className="modal-overlay" onClick={() => setShowDepositModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Receive Deposit</h2>
+              <h2>
+                {depositType === 'INTEREST' ? 'Deposit Interest' :
+                  depositType === 'PRINCIPAL' ? 'Deposit Principal' :
+                    'Receive Deposit'}
+              </h2>
               <button className="close-btn" onClick={() => setShowDepositModal(false)}>&times;</button>
             </div>
             {bankAccounts.length === 0 ? (
@@ -480,8 +503,16 @@ const CustomerDetail = () => {
                   />
                 </div>
                 <p className="deposit-info">
-                  Note: Deposit will first be deducted from interest (₹{customer.accumulatedInterest.toFixed(2)}),
-                  then from principal (₹{customer.principalAmount.toFixed(2)}).
+                  {depositType === 'INTEREST' && (
+                    <>Note: Payment will be deducted from Accumulated Interest (₹{customer.accumulatedInterest.toFixed(2)}).</>
+                  )}
+                  {depositType === 'PRINCIPAL' && (
+                    <>Note: Payment will be deducted from Principal Amount (₹{customer.principalAmount.toFixed(2)}).</>
+                  )}
+                  {!depositType && (
+                    <>Note: Deposit will first be deducted from interest (₹{customer.accumulatedInterest.toFixed(2)}),
+                      then from principal (₹{customer.principalAmount.toFixed(2)}).</>
+                  )}
                 </p>
                 <div className="modal-footer">
                   <button onClick={() => setShowDepositModal(false)} className="btn btn-secondary">

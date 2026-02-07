@@ -193,6 +193,12 @@
   display: flex;
   gap: 20px;
   justify-content: center;
+  flex-wrap: wrap;
+}
+
+.deposit-actions {
+  display: flex;
+  gap: 20px;
 }
 
 .btn-large {
@@ -389,12 +395,15 @@
     width: 100%;
   }
 
-  .loan-actions {
+  .loan-actions,
+  .deposit-actions {
     flex-direction: column;
     gap: 10px;
+    width: 100%;
   }
 
-  .loan-actions .btn {
+  .loan-actions .btn,
+  .deposit-actions .btn {
     width: 100%;
   }
 

@@ -21,7 +21,7 @@ export const transactionService = {
   },
 
   // Receive deposit from customer
-  receiveDeposit: async (customerId: string, data: { amount: number; description?: string; bankAccountId: string; date?: string }) => {
+  receiveDeposit: async (customerId: string, data: { amount: number; description?: string; bankAccountId: string; date?: string; depositType?: 'INTEREST' | 'PRINCIPAL' }) => {
     const response = await api.post(`/transactions/customer/${customerId}/deposit`, data);
     return response.data;
   },
