@@ -256,6 +256,7 @@ export const receiveDeposit = async (req: AuthRequest, res: Response) => {
     let remainingAmount = amount;
 
     // Apply deposit based on type
+    console.log(`Processing deposit for customer ${customerId}: Type=${depositType}, Amount=${amount}`);
     if (depositType === 'INTEREST') {
       if (currentInterest <= 0) {
         return res.status(400).json({ error: 'No interest due to pay.' });

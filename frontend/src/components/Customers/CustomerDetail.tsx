@@ -504,10 +504,10 @@ const CustomerDetail = () => {
                 </div>
                 <p className="deposit-info">
                   {depositType === 'INTEREST' && (
-                    <>Note: Payment will be deducted from Accumulated Interest (₹{customer.accumulatedInterest.toFixed(2)}).</>
+                    <>Note: Payment will be <strong>STRICTLY</strong> deducted from Accumulated Interest (₹{customer.accumulatedInterest.toFixed(2)}).</>
                   )}
                   {depositType === 'PRINCIPAL' && (
-                    <>Note: Payment will be deducted from Principal Amount (₹{customer.principalAmount.toFixed(2)}).</>
+                    <>Note: Payment will be <strong>STRICTLY</strong> deducted from Principal Amount (₹{customer.principalAmount.toFixed(2)}).</>
                   )}
                   {!depositType && (
                     <>Note: Deposit will first be deducted from interest (₹{customer.accumulatedInterest.toFixed(2)}),
